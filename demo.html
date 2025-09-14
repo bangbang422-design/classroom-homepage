@@ -269,6 +269,20 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- 학생 계정관리 (교사 전용) -->
+                    <div class="col-md-6 col-lg-4" id="studentManagementCard" style="display: none;">
+                        <div class="feature-card card" onclick="showStudentManagement()"
+                             style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); cursor: pointer;">
+                            <div class="card-body text-center p-4">
+                                <div class="feature-icon">
+                                    <i class="fas fa-user-cog"></i>
+                                </div>
+                                <h5 class="card-title">학생 계정관리</h5>
+                                <p class="card-text">학생 계정 생성 및 비밀번호 관리</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -550,6 +564,124 @@
         </div>
     </div>
 
+    <!-- 학생 계정관리 섹션 -->
+    <div id="studentManagementSection" class="hidden">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-user-cog"></i> 학생 계정관리</h2>
+            <button class="btn btn-outline-primary" onclick="showDashboard()">
+                <i class="fas fa-arrow-left"></i> 돌아가기
+            </button>
+        </div>
+
+        <!-- 계정 생성 섹션 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-user-plus"></i> 새 학생 계정 생성</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="newStudentName" class="form-label">학생 이름 *</label>
+                            <input type="text" class="form-control" id="newStudentName" placeholder="학생 이름을 입력하세요" maxlength="20">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="newStudentId" class="form-label">학생 아이디 *</label>
+                            <input type="text" class="form-control" id="newStudentId" placeholder="student01" maxlength="20">
+                            <small class="text-muted">영문, 숫자만 사용 가능 (3-20자)</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="newStudentPassword" class="form-label">초기 비밀번호 *</label>
+                            <input type="password" class="form-control" id="newStudentPassword" placeholder="초기 비밀번호" maxlength="50">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">비밀번호 확인 *</label>
+                            <input type="password" class="form-control" id="confirmPassword" placeholder="비밀번호 확인" maxlength="50">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-success" onclick="createStudentAccount()">
+                    <i class="fas fa-user-plus"></i> 계정 생성
+                </button>
+            </div>
+        </div>
+
+        <!-- 기존 계정 관리 섹션 -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-users-cog"></i> 기존 학생 계정 관리</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>학생명</th>
+                                <th>아이디</th>
+                                <th>생성일</th>
+                                <th>마지막 로그인</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentAccountsList">
+                            <!-- 샘플 데이터 -->
+                            <tr>
+                                <td>김학생</td>
+                                <td>student1</td>
+                                <td>2024-01-10</td>
+                                <td>2024-01-15 09:30</td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning me-1" onclick="resetPassword('student1', '김학생')">
+                                        <i class="fas fa-key"></i> 비밀번호 재설정
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteAccount('student1', '김학생')">
+                                        <i class="fas fa-trash"></i> 삭제
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>이학생</td>
+                                <td>student2</td>
+                                <td>2024-01-10</td>
+                                <td>2024-01-14 14:22</td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning me-1" onclick="resetPassword('student2', '이학생')">
+                                        <i class="fas fa-key"></i> 비밀번호 재설정
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteAccount('student2', '이학생')">
+                                        <i class="fas fa-trash"></i> 삭제
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>박학생</td>
+                                <td>student3</td>
+                                <td>2024-01-10</td>
+                                <td>2024-01-13 11:15</td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning me-1" onclick="resetPassword('student3', '박학생')">
+                                        <i class="fas fa-key"></i> 비밀번호 재설정
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteAccount('student3', '박학생')">
+                                        <i class="fas fa-trash"></i> 삭제
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 공지 작성 모달 -->
     <div class="modal fade" id="addNoticeModal" tabindex="-1">
         <div class="modal-dialog">
@@ -687,7 +819,7 @@
 
         // 페이지 표시 함수들
         function hideAllSections() {
-            document.querySelectorAll('#loginSection, #dashboardSection, #chatSection, #noticesSection, #assignmentsSection, #gallerySection, #suggestionsSection, #privateChatSection').forEach(section => {
+            document.querySelectorAll('#loginSection, #dashboardSection, #chatSection, #noticesSection, #assignmentsSection, #gallerySection, #suggestionsSection, #privateChatSection, #studentManagementSection').forEach(section => {
                 section.classList.add('hidden');
             });
         }
@@ -851,6 +983,10 @@
                 showButton('addPhotoBtn');
                 showButton('addSuggestionBtn');
 
+                // 교사 전용 카드 표시
+                const studentManagementCard = document.getElementById('studentManagementCard');
+                if (studentManagementCard) studentManagementCard.style.display = 'block';
+
                 // 대시보드 텍스트 변경
                 setText('assignmentText', '과제를 내주고 제출물을 확인하세요');
                 setText('suggestionText', '학생들의 건의사항을 확인하세요');
@@ -862,6 +998,10 @@
                 hideButton('addAssignmentBtn');
                 showButton('addPhotoBtn');
                 showButton('addSuggestionBtn');
+
+                // 교사 전용 카드 숨김
+                const studentManagementCard = document.getElementById('studentManagementCard');
+                if (studentManagementCard) studentManagementCard.style.display = 'none';
 
                 // 대시보드 텍스트 변경
                 setText('assignmentText', '과제를 확인하고 제출하세요');
@@ -1448,6 +1588,182 @@
             } else {
                 // 학생은 대시보드로
                 showDashboard();
+            }
+        }
+
+        // 학생 계정관리 관련 함수들
+        function showStudentManagement() {
+            console.log('showStudentManagement called, role:', currentRole);
+
+            if (currentRole !== '교사') {
+                alert('교사만 학생 계정관리에 접근할 수 있습니다.');
+                return;
+            }
+
+            hideAllSections();
+            document.getElementById('studentManagementSection').classList.remove('hidden');
+        }
+
+        // 가상의 학생 계정 데이터 (실제로는 서버/데이터베이스에서 관리)
+        let studentAccounts = [
+            { id: 'student1', name: '김학생', password: 'student123', created: '2024-01-10', lastLogin: '2024-01-15 09:30' },
+            { id: 'student2', name: '이학생', password: 'student456', created: '2024-01-10', lastLogin: '2024-01-14 14:22' },
+            { id: 'student3', name: '박학생', password: 'student789', created: '2024-01-10', lastLogin: '2024-01-13 11:15' }
+        ];
+
+        function createStudentAccount() {
+            console.log('createStudentAccount called');
+
+            if (currentRole !== '교사') {
+                alert('교사만 학생 계정을 생성할 수 있습니다.');
+                return;
+            }
+
+            const name = document.getElementById('newStudentName').value.trim();
+            const id = document.getElementById('newStudentId').value.trim();
+            const password = document.getElementById('newStudentPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+            // 입력 검증
+            if (!name || !id || !password || !confirmPassword) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+
+            if (name.length < 2 || name.length > 20) {
+                alert('학생 이름은 2-20자 사이로 입력해주세요.');
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9]{3,20}$/.test(id)) {
+                alert('아이디는 영문, 숫자만 사용하여 3-20자로 입력해주세요.');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+                return;
+            }
+
+            if (password.length < 4) {
+                alert('비밀번호는 최소 4자 이상이어야 합니다.');
+                return;
+            }
+
+            // 중복 아이디 체크
+            if (studentAccounts.find(student => student.id === id)) {
+                alert('이미 존재하는 아이디입니다. 다른 아이디를 사용해주세요.');
+                return;
+            }
+
+            // 현재 날짜
+            const now = new Date().toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+
+            // 새 계정 추가
+            const newStudent = {
+                id: id,
+                name: name,
+                password: password,
+                created: now,
+                lastLogin: '로그인 기록 없음'
+            };
+
+            studentAccounts.push(newStudent);
+
+            // 테이블에 새 행 추가
+            const tbody = document.getElementById('studentAccountsList');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${name}</td>
+                <td>${id}</td>
+                <td>${now}</td>
+                <td>로그인 기록 없음</td>
+                <td>
+                    <button class="btn btn-sm btn-warning me-1" onclick="resetPassword('${id}', '${name}')">
+                        <i class="fas fa-key"></i> 비밀번호 재설정
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteAccount('${id}', '${name}')">
+                        <i class="fas fa-trash"></i> 삭제
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(newRow);
+
+            // 입력 필드 초기화
+            document.getElementById('newStudentName').value = '';
+            document.getElementById('newStudentId').value = '';
+            document.getElementById('newStudentPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+
+            alert(`${name}(${id}) 계정이 성공적으로 생성되었습니다!`);
+        }
+
+        function resetPassword(studentId, studentName) {
+            console.log('resetPassword called:', studentId, studentName);
+
+            if (currentRole !== '교사') {
+                alert('교사만 비밀번호를 재설정할 수 있습니다.');
+                return;
+            }
+
+            const confirmed = confirm(`${studentName}(${studentId})의 비밀번호를 재설정하시겠습니까?`);
+            if (!confirmed) return;
+
+            const newPassword = prompt(`${studentName}의 새 비밀번호를 입력하세요:`, 'newpassword123');
+            if (!newPassword) {
+                alert('비밀번호 재설정이 취소되었습니다.');
+                return;
+            }
+
+            if (newPassword.length < 4) {
+                alert('비밀번호는 최소 4자 이상이어야 합니다.');
+                return;
+            }
+
+            // 계정 찾기 및 비밀번호 업데이트
+            const student = studentAccounts.find(s => s.id === studentId);
+            if (student) {
+                student.password = newPassword;
+                alert(`${studentName}의 비밀번호가 성공적으로 변경되었습니다.\n새 비밀번호: ${newPassword}`);
+            } else {
+                alert('학생 계정을 찾을 수 없습니다.');
+            }
+        }
+
+        function deleteAccount(studentId, studentName) {
+            console.log('deleteAccount called:', studentId, studentName);
+
+            if (currentRole !== '교사') {
+                alert('교사만 학생 계정을 삭제할 수 있습니다.');
+                return;
+            }
+
+            const confirmed = confirm(`정말로 ${studentName}(${studentId}) 계정을 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.`);
+            if (!confirmed) return;
+
+            // 계정 배열에서 제거
+            const index = studentAccounts.findIndex(s => s.id === studentId);
+            if (index !== -1) {
+                studentAccounts.splice(index, 1);
+
+                // 테이블에서 행 제거
+                const tbody = document.getElementById('studentAccountsList');
+                const rows = tbody.querySelectorAll('tr');
+                for (const row of rows) {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length > 1 && cells[1].textContent === studentId) {
+                        row.remove();
+                        break;
+                    }
+                }
+
+                alert(`${studentName}(${studentId}) 계정이 삭제되었습니다.`);
+            } else {
+                alert('학생 계정을 찾을 수 없습니다.');
             }
         }
     </script>
