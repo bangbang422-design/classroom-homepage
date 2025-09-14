@@ -113,6 +113,9 @@
                     <i class="fas fa-user"></i> <span id="userName"></span>님
                     <span id="userRole" class="badge bg-primary ms-1"></span>
                 </span>
+                <button class="btn btn-outline-secondary btn-sm ms-2" id="settingsBtn" style="display: none;" onclick="showTeacherSettings()">
+                    <i class="fas fa-cog"></i> 설정
+                </button>
                 <button class="btn btn-outline-danger btn-sm ms-2" id="logoutBtn" style="display: none;" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i> 로그아웃
                 </button>
@@ -734,6 +737,35 @@
         </div>
     </div>
 
+    <!-- 교사 설정 모달 -->
+    <div class="modal fade" id="teacherSettingsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-edit"></i> 교사 설정</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="teacherDisplayName" class="form-label">표시 이름 *</label>
+                        <input type="text" class="form-control" id="teacherDisplayName" placeholder="김선생님" maxlength="20">
+                        <small class="text-muted">학생들에게 표시될 이름을 입력하세요 (2-20자)</small>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>참고:</strong> 이름을 변경하면 모든 메시지와 공지사항에서 새 이름으로 표시됩니다.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary" onclick="updateTeacherName()">
+                        <i class="fas fa-save"></i> 변경 저장
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 공지 작성 모달 -->
     <div class="modal fade" id="addNoticeModal" tabindex="-1">
         <div class="modal-dialog">
@@ -868,6 +900,7 @@
     <script>
         let currentUser = null;
         let currentRole = null;
+        let teacherDisplayName = '김선생님'; // 기본 교사 이름
 
         // 페이지 표시 함수들
         function hideAllSections() {
@@ -881,6 +914,7 @@
             document.getElementById('loginSection').classList.remove('hidden');
             document.getElementById('userInfo').style.display = 'none';
             document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('settingsBtn').style.display = 'none';
         }
 
         function showDashboard() {
@@ -917,6 +951,7 @@
         function logout() {
             currentUser = null;
             currentRole = null;
+            teacherDisplayName = '김선생님'; // 기본값으로 리셋
             showLogin();
         }
 
@@ -974,7 +1009,7 @@
 
             if (username === 'teacher' && password === 'teacher123') {
                 console.log('Teacher login success');
-                simpleLogin('교사', '김선생님');
+                simpleLogin('교사', teacherDisplayName);
             } else if (username === 'student1' && password === 'student123') {
                 console.log('Student login success');
                 simpleLogin('학생', '김학생');
@@ -1021,6 +1056,11 @@
 
             const logoutBtn = document.getElementById('logoutBtn');
             if (logoutBtn) logoutBtn.style.display = 'inline-block';
+
+            const settingsBtn = document.getElementById('settingsBtn');
+            if (settingsBtn) {
+                settingsBtn.style.display = role === '교사' ? 'inline-block' : 'none';
+            }
 
             // 대시보드로 이동
             showDashboard();
@@ -1092,7 +1132,7 @@
         // 빠른 로그인 함수들 (인라인 버튼용)
         function quickTeacherLogin() {
             console.log('Quick teacher login');
-            simpleLogin('교사', '김선생님');
+            simpleLogin('교사', teacherDisplayName);
         }
 
         function quickStudentLogin() {
@@ -2047,6 +2087,72 @@
             hideBulkUpload();
 
             alert(`🎉 일괄 생성 완료!\n\n성공: ${successCount}개 계정이 생성되었습니다.`);
+        }
+
+        // 교사 설정 관련 함수들
+        function showTeacherSettings() {
+            console.log('showTeacherSettings called, role:', currentRole);
+
+            if (currentRole !== '교사') {
+                alert('교사만 설정을 변경할 수 있습니다.');
+                return;
+            }
+
+            // 현재 이름을 입력 필드에 설정
+            document.getElementById('teacherDisplayName').value = teacherDisplayName;
+
+            // 모달 표시
+            const modal = new bootstrap.Modal(document.getElementById('teacherSettingsModal'));
+            modal.show();
+        }
+
+        function updateTeacherName() {
+            console.log('updateTeacherName called');
+
+            if (currentRole !== '교사') {
+                alert('교사만 이름을 변경할 수 있습니다.');
+                return;
+            }
+
+            const newName = document.getElementById('teacherDisplayName').value.trim();
+
+            // 유효성 검사
+            if (!newName) {
+                alert('이름을 입력해주세요.');
+                return;
+            }
+
+            if (newName.length < 2 || newName.length > 20) {
+                alert('이름은 2-20자 사이로 입력해주세요.');
+                return;
+            }
+
+            // 이름 변경 확인
+            if (newName === teacherDisplayName) {
+                alert('현재 이름과 동일합니다.');
+                return;
+            }
+
+            const confirmed = confirm(`표시 이름을 "${newName}"으로 변경하시겠습니까?\n\n변경 후 모든 메시지와 공지사항에서 새 이름으로 표시됩니다.`);
+            if (!confirmed) return;
+
+            // 이름 변경 적용
+            const oldName = teacherDisplayName;
+            teacherDisplayName = newName;
+            currentUser = newName;
+
+            // UI 업데이트
+            const userName = document.getElementById('userName');
+            if (userName) userName.textContent = newName;
+
+            // 모달 닫기
+            const modal = bootstrap.Modal.getInstance(document.getElementById('teacherSettingsModal'));
+            if (modal) modal.hide();
+
+            // 성공 알림
+            alert(`✅ 이름이 변경되었습니다!\n\n${oldName} → ${newName}\n\n새 이름이 모든 곳에 적용됩니다.`);
+
+            console.log(`Teacher name changed: ${oldName} → ${newName}`);
         }
     </script>
 </body>
