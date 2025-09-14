@@ -258,14 +258,14 @@
 
                     <!-- 개인 메시지 -->
                     <div class="col-md-6 col-lg-4">
-                        <div class="feature-card card"
-                             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); opacity: 0.7;">
+                        <div class="feature-card card" onclick="showPrivateChat()"
+                             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); cursor: pointer;">
                             <div class="card-body text-center p-4">
                                 <div class="feature-icon">
                                     <i class="fas fa-user-friends"></i>
                                 </div>
                                 <h5 class="card-title">1:1 대화</h5>
-                                <p class="card-text">개인 메시지 (준비 중)</p>
+                                <p class="card-text" id="privateChatText">선생님과 개인 메시지</p>
                             </div>
                         </div>
                     </div>
@@ -472,6 +472,81 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 1:1 대화 섹션 -->
+            <div id="privateChatSection" class="hidden">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-user-friends"></i> 1:1 대화</h2>
+                    <button class="btn btn-outline-primary" onclick="showDashboard()">
+                        <i class="fas fa-arrow-left"></i> 돌아가기
+                    </button>
+                </div>
+
+                <!-- 대화 상대 선택 (교사용) -->
+                <div id="teacherChatSelector" style="display: none;">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-users"></i> 대화할 학생 선택</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <button class="btn btn-outline-primary w-100" onclick="startPrivateChat('김학생')">
+                                        <i class="fas fa-user"></i> 김학생
+                                    </button>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <button class="btn btn-outline-primary w-100" onclick="startPrivateChat('이학생')">
+                                        <i class="fas fa-user"></i> 이학생
+                                    </button>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <button class="btn btn-outline-primary w-100" onclick="startPrivateChat('박학생')">
+                                        <i class="fas fa-user"></i> 박학생
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 대화창 -->
+                <div id="privateChatWindow" style="display: none;">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 id="privateChatTitle"><i class="fas fa-comments"></i> 대화 중...</h5>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="closePrivateChat()">
+                                <i class="fas fa-times"></i> 닫기
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <!-- 메시지 영역 -->
+                            <div id="privateMessages" style="height: 400px; overflow-y: auto; border: 1px solid #e9ecef; border-radius: 5px; padding: 15px; margin-bottom: 15px; background-color: #f8f9fa;">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-comments fa-2x mb-2"></i><br>
+                                    <small>개인 대화를 시작해보세요</small>
+                                </div>
+                            </div>
+
+                            <!-- 메시지 입력 -->
+                            <div class="input-group">
+                                <input type="text" id="privateMessageInput" class="form-control" placeholder="메시지를 입력하세요..." onkeypress="if(event.key==='Enter') sendPrivateMessage()">
+                                <button class="btn btn-primary" onclick="sendPrivateMessage()">
+                                    <i class="fas fa-paper-plane"></i> 전송
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 안내 메시지 (학생이 교사와 대화할 때) -->
+                <div id="studentChatInfo" style="display: none;">
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-info-circle"></i> 교사와의 1:1 대화</h5>
+                        <p>선생님과 개인적인 대화를 나눌 수 있습니다. 궁금한 점이나 상담이 필요할 때 언제든 메시지를 보내세요.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -612,7 +687,7 @@
 
         // 페이지 표시 함수들
         function hideAllSections() {
-            document.querySelectorAll('#loginSection, #dashboardSection, #chatSection, #noticesSection, #assignmentsSection, #gallerySection, #suggestionsSection').forEach(section => {
+            document.querySelectorAll('#loginSection, #dashboardSection, #chatSection, #noticesSection, #assignmentsSection, #gallerySection, #suggestionsSection, #privateChatSection').forEach(section => {
                 section.classList.add('hidden');
             });
         }
@@ -780,6 +855,7 @@
                 setText('assignmentText', '과제를 내주고 제출물을 확인하세요');
                 setText('suggestionText', '학생들의 건의사항을 확인하세요');
                 setText('suggestionContent', '학생들의 건의사항을 확인할 수 있습니다');
+                setText('privateChatText', '학생들과 개인 상담');
             } else {
                 // 학생은 일부 버튼만 표시
                 hideButton('addNoticeBtn');
@@ -791,6 +867,7 @@
                 setText('assignmentText', '과제를 확인하고 제출하세요');
                 setText('suggestionText', '익명으로 건의사항을 남겨보세요');
                 setText('suggestionContent', '익명으로 건의사항을 남겨보세요');
+                setText('privateChatText', '선생님과 개인 메시지');
             }
         }
 
@@ -1222,6 +1299,156 @@
             document.getElementById('suggestionContent').value = '';
 
             alert('건의사항이 익명으로 제출되었습니다! 📝');
+        }
+
+        // 1:1 대화 관련 함수들
+        let currentChatPartner = null;
+
+        function showPrivateChat() {
+            hideAllSections();
+            document.getElementById('privateChatSection').classList.remove('hidden');
+
+            console.log('Showing private chat for role:', currentRole);
+
+            if (currentRole === '교사') {
+                // 교사: 학생 선택 화면 표시
+                document.getElementById('teacherChatSelector').style.display = 'block';
+                document.getElementById('studentChatInfo').style.display = 'none';
+                document.getElementById('privateChatWindow').style.display = 'none';
+            } else {
+                // 학생: 교사와 바로 대화 시작
+                document.getElementById('teacherChatSelector').style.display = 'none';
+                document.getElementById('studentChatInfo').style.display = 'block';
+                startPrivateChat('김선생님');
+            }
+        }
+
+        function startPrivateChat(partnerName) {
+            currentChatPartner = partnerName;
+
+            console.log('Starting private chat with:', partnerName);
+
+            // 대화창 표시
+            document.getElementById('privateChatWindow').style.display = 'block';
+            document.getElementById('privateChatTitle').innerHTML =
+                `<i class="fas fa-comments"></i> ${partnerName}님과의 대화`;
+
+            // 교사용 선택화면 숨기기
+            if (currentRole === '교사') {
+                document.getElementById('teacherChatSelector').style.display = 'none';
+            }
+
+            // 메시지 영역 초기화
+            const messagesArea = document.getElementById('privateMessages');
+            messagesArea.innerHTML = `
+                <div class="text-center text-muted mb-3">
+                    <i class="fas fa-comments fa-2x mb-2"></i><br>
+                    <small>${partnerName}님과의 개인 대화</small>
+                </div>
+            `;
+
+            // 샘플 메시지 추가 (데모용)
+            addSamplePrivateMessages(partnerName);
+
+            // 입력창 포커스
+            document.getElementById('privateMessageInput').focus();
+        }
+
+        function addSamplePrivateMessages(partnerName) {
+            const messagesArea = document.getElementById('privateMessages');
+
+            if (currentRole === '교사' && partnerName === '김학생') {
+                // 교사가 김학생과 대화할 때의 샘플 메시지
+                messagesArea.innerHTML += `
+                    <div class="mb-2">
+                        <strong class="text-primary">김학생:</strong>
+                        선생님, 오늘 수학 숙제에서 3번 문제가 어려워요.
+                        <small class="text-muted d-block">2024-01-15 14:20</small>
+                    </div>
+                    <div class="mb-2">
+                        <strong class="text-success">김선생님:</strong>
+                        3번 문제는 공식을 먼저 적용해보세요. 내일 자세히 설명해드릴게요.
+                        <small class="text-muted d-block">2024-01-15 14:25</small>
+                    </div>
+                `;
+            } else if (currentRole === '학생') {
+                // 학생이 교사와 대화할 때
+                messagesArea.innerHTML += `
+                    <div class="mb-2">
+                        <strong class="text-primary">${currentUser}:</strong>
+                        선생님, 내일 시험 범위를 다시 확인하고 싶습니다.
+                        <small class="text-muted d-block">2024-01-15 15:10</small>
+                    </div>
+                    <div class="mb-2">
+                        <strong class="text-success">김선생님:</strong>
+                        네, 1~3단원까지입니다. 공식 정리 프린트도 꼭 보세요.
+                        <small class="text-muted d-block">2024-01-15 15:15</small>
+                    </div>
+                `;
+            }
+        }
+
+        function sendPrivateMessage() {
+            const input = document.getElementById('privateMessageInput');
+            const message = input.value.trim();
+
+            if (!message) {
+                alert('메시지를 입력해주세요.');
+                return;
+            }
+
+            if (!currentChatPartner) {
+                alert('대화 상대를 선택해주세요.');
+                return;
+            }
+
+            // 현재 시간
+            const now = new Date().toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // 메시지 추가
+            const messagesArea = document.getElementById('privateMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'mb-2';
+            messageDiv.innerHTML = `
+                <strong class="text-info">${currentUser}:</strong> ${message}
+                <small class="text-muted d-block">${now}</small>
+            `;
+
+            messagesArea.appendChild(messageDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+            input.value = '';
+
+            // 자동 응답 (데모용)
+            setTimeout(() => {
+                const autoReply = document.createElement('div');
+                autoReply.className = 'mb-2';
+                autoReply.innerHTML = `
+                    <strong class="text-success">${currentChatPartner}:</strong>
+                    메시지를 잘 받았습니다. 곧 답변드리겠습니다! (데모 자동 응답)
+                    <small class="text-muted d-block">${now}</small>
+                `;
+                messagesArea.appendChild(autoReply);
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+            }, 1500);
+        }
+
+        function closePrivateChat() {
+            document.getElementById('privateChatWindow').style.display = 'none';
+            currentChatPartner = null;
+
+            if (currentRole === '교사') {
+                // 교사는 학생 선택 화면으로
+                document.getElementById('teacherChatSelector').style.display = 'block';
+            } else {
+                // 학생은 대시보드로
+                showDashboard();
+            }
         }
     </script>
 </body>
