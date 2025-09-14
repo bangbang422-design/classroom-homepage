@@ -349,15 +349,47 @@
             <div id="assignmentsSection" class="hidden">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2><i class="fas fa-tasks"></i> 과제</h2>
-                    <button class="btn btn-outline-primary" onclick="showDashboard()">
-                        <i class="fas fa-arrow-left"></i> 돌아가기
-                    </button>
+                    <div>
+                        <button class="btn btn-warning me-2" id="addAssignmentBtn" onclick="showAddAssignmentModal()" style="display: none;">
+                            <i class="fas fa-plus"></i> 과제 내기
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="showDashboard()">
+                            <i class="fas fa-arrow-left"></i> 돌아가기
+                        </button>
+                    </div>
                 </div>
-                <div class="card">
-                    <div class="card-body">
-                        <h5><i class="fas fa-file-alt text-primary"></i> 수학 문제집 3단원</h5>
-                        <p>3단원 연습문제를 풀고 사진을 찍어서 제출하세요.</p>
-                        <small class="text-muted">마감일: 2024-01-20 23:59</small>
+
+                <div id="assignmentsList">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5><i class="fas fa-file-alt text-primary"></i> 수학 문제집 3단원</h5>
+                                    <p>3단원 연습문제를 풀고 사진을 찍어서 제출하세요.</p>
+                                    <small class="text-muted">마감일: 2024-01-20 23:59</small>
+                                </div>
+                                <div id="assignmentActions">
+                                    <button class="btn btn-sm btn-primary" onclick="submitAssignment(1)">
+                                        <i class="fas fa-upload"></i> 과제 제출
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5><i class="fas fa-file-alt text-primary"></i> 영어 단어장 암기</h5>
+                                    <p>Unit 5-6 단어를 암기하고 퀴즈를 준비하세요.</p>
+                                    <small class="text-muted">마감일: 2024-01-18 18:00</small>
+                                </div>
+                                <div>
+                                    <span class="badge bg-success">제출완료</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -365,28 +397,80 @@
             <div id="gallerySection" class="hidden">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2><i class="fas fa-images"></i> 앨범</h2>
-                    <button class="btn btn-outline-primary" onclick="showDashboard()">
-                        <i class="fas fa-arrow-left"></i> 돌아가기
-                    </button>
+                    <div>
+                        <button class="btn btn-info me-2" id="uploadPhotoBtn" onclick="showUploadPhotoModal()">
+                            <i class="fas fa-camera"></i> 사진 업로드
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="showDashboard()">
+                            <i class="fas fa-arrow-left"></i> 돌아가기
+                        </button>
+                    </div>
                 </div>
-                <p class="text-center py-5 text-muted">
-                    <i class="fas fa-camera fa-5x mb-3"></i><br>
-                    아직 사진이 없습니다<br>
-                    첫 번째 사진을 업로드해보세요!
-                </p>
+
+                <div id="photosList">
+                    <div class="row g-3">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card">
+                                <img src="https://via.placeholder.com/300x200?text=우리반+소풍" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                <div class="card-body p-2">
+                                    <h6 class="card-title">우리반 소풍 📸</h6>
+                                    <small class="text-muted">김학생 · 2024-01-10</small>
+                                    <div class="mt-2" id="photoActions" style="display: none;">
+                                        <button class="btn btn-sm btn-success me-1" onclick="approvePhoto(1)">승인</button>
+                                        <button class="btn btn-sm btn-danger" onclick="rejectPhoto(1)">거부</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card">
+                                <img src="https://via.placeholder.com/300x200?text=체육대회" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                <div class="card-body p-2">
+                                    <h6 class="card-title">체육대회 🏃‍♀️</h6>
+                                    <small class="text-muted">이학생 · 2024-01-08</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4" id="emptyGallery" style="display: none;">
+                        <i class="fas fa-camera fa-5x text-muted mb-3"></i>
+                        <h4 class="text-muted">아직 사진이 없습니다</h4>
+                        <p class="text-muted">첫 번째 사진을 업로드해보세요!</p>
+                    </div>
+                </div>
             </div>
 
             <div id="suggestionsSection" class="hidden">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2><i class="fas fa-envelope"></i> 익명 건의함</h2>
-                    <button class="btn btn-outline-primary" onclick="showDashboard()">
-                        <i class="fas fa-arrow-left"></i> 돌아가기
-                    </button>
+                    <div>
+                        <button class="btn btn-primary me-2" id="addSuggestionBtn" onclick="showAddSuggestionModal()">
+                            <i class="fas fa-plus"></i> 건의하기
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="showDashboard()">
+                            <i class="fas fa-arrow-left"></i> 돌아가기
+                        </button>
+                    </div>
                 </div>
-                <p class="text-center py-5 text-muted">
-                    <i class="fas fa-inbox fa-5x mb-3"></i><br>
-                    <span id="suggestionContent">건의사항을 남겨보세요</span>
-                </p>
+
+                <div id="suggestionsList">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6><i class="fas fa-user-secret text-primary"></i> 익명 #001</h6>
+                            <p>급식 메뉴에 대한 건의사항입니다. 좀 더 다양한 메뉴가 있었으면 좋겠어요!</p>
+                            <small class="text-muted">2024-01-15 14:30</small>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6><i class="fas fa-user-secret text-primary"></i> 익명 #002</h6>
+                            <p>교실 온도 조절에 대한 건의입니다. 겨울철 난방이 부족한 것 같아요.</p>
+                            <small class="text-muted">2024-01-14 09:15</small>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -408,11 +492,113 @@
                         <label for="noticeContent" class="form-label">내용 *</label>
                         <textarea class="form-control" id="noticeContent" rows="5" required maxlength="1000" placeholder="중요한 공지사항을 작성해주세요..."></textarea>
                     </div>
+                    <div class="mb-3">
+                        <label for="noticeFile" class="form-label">첨부파일 (선택)</label>
+                        <input type="file" class="form-control" id="noticeFile" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.hwp,.jpg,.jpeg,.png,.gif">
+                        <small class="text-muted">PDF, 문서파일, 이미지 파일 업로드 가능</small>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                     <button type="button" class="btn btn-primary" onclick="addNotice()">
                         <i class="fas fa-save"></i> 공지 등록
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 과제 작성 모달 -->
+    <div class="modal fade" id="addAssignmentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-tasks"></i> 과제 내기</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="assignmentTitle" class="form-label">과제명 *</label>
+                        <input type="text" class="form-control" id="assignmentTitle" required maxlength="100" placeholder="과제 제목을 입력하세요">
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignmentContent" class="form-label">과제 설명 *</label>
+                        <textarea class="form-control" id="assignmentContent" rows="4" required maxlength="1000" placeholder="과제에 대한 자세한 설명을 작성해주세요..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignmentDeadline" class="form-label">마감일 *</label>
+                        <input type="datetime-local" class="form-control" id="assignmentDeadline" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignmentFile" class="form-label">첨부파일 (선택)</label>
+                        <input type="file" class="form-control" id="assignmentFile" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.hwp,.jpg,.jpeg,.png,.gif">
+                        <small class="text-muted">과제 설명자료, 양식파일 등 업로드 가능</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-warning" onclick="addAssignment()">
+                        <i class="fas fa-save"></i> 과제 등록
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 사진 업로드 모달 -->
+    <div class="modal fade" id="addPhotoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-images"></i> 미디어 업로드</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="photoTitle" class="form-label">제목 *</label>
+                        <input type="text" class="form-control" id="photoTitle" required maxlength="100" placeholder="사진/동영상 제목을 입력하세요">
+                    </div>
+                    <div class="mb-3">
+                        <label for="photoFile" class="form-label">파일 선택 *</label>
+                        <input type="file" class="form-control" id="photoFile" accept="image/*,video/mp4,video/avi,video/mov,video/wmv" required>
+                        <small class="text-muted">이미지: JPG, PNG, GIF | 동영상: MP4, AVI, MOV, WMV</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="photoDescription" class="form-label">설명</label>
+                        <textarea class="form-control" id="photoDescription" rows="3" maxlength="500" placeholder="사진에 대한 설명을 작성해주세요..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-info" onclick="addPhoto()">
+                        <i class="fas fa-upload"></i> 사진 업로드
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 익명 건의 모달 -->
+    <div class="modal fade" id="addSuggestionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-envelope"></i> 익명 건의</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-user-secret"></i> 이 건의는 완전히 익명으로 처리됩니다.
+                    </div>
+                    <div class="mb-3">
+                        <label for="suggestionContent" class="form-label">건의사항 *</label>
+                        <textarea class="form-control" id="suggestionContent" rows="5" required maxlength="1000" placeholder="건의하고 싶은 내용을 자유롭게 작성해주세요..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary" onclick="addSuggestion()">
+                        <i class="fas fa-send"></i> 익명 제출
                     </button>
                 </div>
             </div>
@@ -485,12 +671,18 @@
                 document.getElementById('suggestionContent').textContent = '학생들의 건의사항을 확인할 수 있습니다';
                 // 교사용 버튼들 표시
                 document.getElementById('addNoticeBtn').style.display = 'inline-block';
+                document.getElementById('addAssignmentBtn').style.display = 'inline-block';
+                document.getElementById('addPhotoBtn').style.display = 'inline-block';
+                document.getElementById('addSuggestionBtn').style.display = 'inline-block';
             } else {
                 document.getElementById('assignmentText').textContent = '과제를 확인하고 제출하세요';
                 document.getElementById('suggestionText').textContent = '익명으로 건의사항을 남겨보세요';
                 document.getElementById('suggestionContent').textContent = '익명으로 건의사항을 남겨보세요';
-                // 학생은 버튼 숨김
+                // 학생용 버튼 설정
                 document.getElementById('addNoticeBtn').style.display = 'none';
+                document.getElementById('addAssignmentBtn').style.display = 'none';
+                document.getElementById('addPhotoBtn').style.display = 'inline-block'; // 학생도 사진 업로드 가능
+                document.getElementById('addSuggestionBtn').style.display = 'inline-block'; // 학생도 건의 가능
             }
 
             document.getElementById('userInfo').style.display = 'inline';
@@ -586,6 +778,7 @@
         function addNotice() {
             const title = document.getElementById('noticeTitle').value.trim();
             const content = document.getElementById('noticeContent').value.trim();
+            const file = document.getElementById('noticeFile').files[0];
 
             if (!title || !content) {
                 alert('제목과 내용을 모두 입력해주세요.');
@@ -606,6 +799,15 @@
                 minute: '2-digit'
             });
 
+            // 첨부파일 정보
+            let attachmentHtml = '';
+            if (file) {
+                attachmentHtml = `<div class="mt-2 p-2 bg-light rounded">
+                    <i class="fas fa-paperclip text-primary"></i>
+                    <strong>첨부파일:</strong> ${file.name} (${(file.size/1024/1024).toFixed(2)}MB)
+                </div>`;
+            }
+
             // 새 공지사항 생성
             const noticesList = document.getElementById('noticesList');
             const newNotice = document.createElement('div');
@@ -614,6 +816,7 @@
                 <div class="card-body">
                     <h5><i class="fas fa-pin text-danger"></i> ${title}</h5>
                     <p>${content}</p>
+                    ${attachmentHtml}
                     <small class="text-muted">${currentUser} · ${now}</small>
                     <button class="btn btn-sm btn-outline-danger ms-2" onclick="removeNotice(this)">
                         <i class="fas fa-trash"></i> 삭제
@@ -629,6 +832,7 @@
             modal.hide();
             document.getElementById('noticeTitle').value = '';
             document.getElementById('noticeContent').value = '';
+            document.getElementById('noticeFile').value = '';
 
             alert('공지사항이 등록되었습니다! 🎉');
         }
@@ -643,6 +847,275 @@
             } else {
                 alert('교사만 공지사항을 삭제할 수 있습니다.');
             }
+        }
+
+        // 과제 관련 함수들
+        function showAddAssignmentModal() {
+            if (currentRole === '교사') {
+                const modal = new bootstrap.Modal(document.getElementById('addAssignmentModal'));
+                modal.show();
+            } else {
+                alert('교사만 과제를 내줄 수 있습니다.');
+            }
+        }
+
+        function addAssignment() {
+            const title = document.getElementById('assignmentTitle').value.trim();
+            const content = document.getElementById('assignmentContent').value.trim();
+            const deadline = document.getElementById('assignmentDeadline').value;
+            const file = document.getElementById('assignmentFile').files[0];
+
+            if (!title || !content || !deadline) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+
+            if (currentRole !== '교사') {
+                alert('교사만 과제를 내줄 수 있습니다.');
+                return;
+            }
+
+            // 현재 시간
+            const now = new Date().toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // 마감일 포맷팅
+            const deadlineDate = new Date(deadline).toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // 첨부파일 정보
+            let attachmentHtml = '';
+            if (file) {
+                attachmentHtml = `<div class="mt-2 p-2 bg-light rounded">
+                    <i class="fas fa-paperclip text-primary"></i>
+                    <strong>첨부파일:</strong> ${file.name} (${(file.size/1024/1024).toFixed(2)}MB)
+                </div>`;
+            }
+
+            // 새 과제 생성
+            const assignmentsList = document.getElementById('assignmentsList');
+            const newAssignment = document.createElement('div');
+            newAssignment.className = 'card mb-3';
+            newAssignment.innerHTML = `
+                <div class="card-body">
+                    <h5><i class="fas fa-clipboard-list text-warning"></i> ${title}</h5>
+                    <p>${content}</p>
+                    ${attachmentHtml}
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <small class="text-muted">${currentUser} · ${now}</small>
+                        <span class="badge bg-danger">마감: ${deadlineDate}</span>
+                    </div>
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-outline-success me-2" onclick="submitAssignment(this)">
+                            <i class="fas fa-upload"></i> 제출하기
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="removeAssignment(this)" style="display: ${currentRole === '교사' ? 'inline-block' : 'none'}">
+                            <i class="fas fa-trash"></i> 삭제
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // 맨 위에 추가
+            assignmentsList.insertBefore(newAssignment, assignmentsList.firstChild);
+
+            // 모달 닫기 및 폼 초기화
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addAssignmentModal'));
+            modal.hide();
+            document.getElementById('assignmentTitle').value = '';
+            document.getElementById('assignmentContent').value = '';
+            document.getElementById('assignmentDeadline').value = '';
+            document.getElementById('assignmentFile').value = '';
+
+            alert('과제가 등록되었습니다! 📝');
+        }
+
+        function removeAssignment(button) {
+            if (currentRole === '교사') {
+                if (confirm('이 과제를 삭제하시겠습니까?')) {
+                    const assignmentCard = button.closest('.card');
+                    assignmentCard.remove();
+                    alert('과제가 삭제되었습니다.');
+                }
+            } else {
+                alert('교사만 과제를 삭제할 수 있습니다.');
+            }
+        }
+
+        function submitAssignment(button) {
+            if (currentRole === '학생') {
+                alert('과제 제출 기능은 실제 서버에서 구현됩니다. (데모 버전)');
+            } else {
+                alert('학생만 과제를 제출할 수 있습니다.');
+            }
+        }
+
+        // 사진 관련 함수들
+        function showAddPhotoModal() {
+            const modal = new bootstrap.Modal(document.getElementById('addPhotoModal'));
+            modal.show();
+        }
+
+        function addPhoto() {
+            const title = document.getElementById('photoTitle').value.trim();
+            const file = document.getElementById('photoFile').files[0];
+            const description = document.getElementById('photoDescription').value.trim();
+
+            if (!title || !file) {
+                alert('제목과 사진을 모두 입력해주세요.');
+                return;
+            }
+
+            // 현재 시간
+            const now = new Date().toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // 파일 타입 확인
+            const isVideo = file.type.startsWith('video/');
+            const isImage = file.type.startsWith('image/');
+
+            const galleryGrid = document.getElementById('galleryGrid');
+            const newPhoto = document.createElement('div');
+            newPhoto.className = 'col-md-4 mb-4';
+
+            if (isVideo) {
+                // 동영상 처리
+                const videoURL = URL.createObjectURL(file);
+                newPhoto.innerHTML = `
+                    <div class="card">
+                        <video class="card-img-top" style="height: 200px; object-fit: cover;" controls>
+                            <source src="${videoURL}" type="${file.type}">
+                            브라우저가 동영상을 지원하지 않습니다.
+                        </video>
+                        <div class="card-body">
+                            <h6><i class="fas fa-video text-primary"></i> ${title}</h6>
+                            ${description ? `<p class="card-text small">${description}</p>` : ''}
+                            <small class="text-muted">${currentUser} · ${now}</small>
+                            <div class="mt-2">
+                                <button class="btn btn-sm btn-outline-danger" onclick="removePhoto(this)" style="display: ${currentRole === '교사' ? 'inline-block' : 'none'}">
+                                    <i class="fas fa-trash"></i> 삭제
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // 맨 앞에 추가
+                galleryGrid.insertBefore(newPhoto, galleryGrid.firstChild);
+                alert('동영상이 업로드되었습니다! 🎬');
+            } else if (isImage) {
+                // 이미지 처리
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    newPhoto.innerHTML = `
+                        <div class="card">
+                            <img src="${e.target.result}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h6><i class="fas fa-image text-success"></i> ${title}</h6>
+                                ${description ? `<p class="card-text small">${description}</p>` : ''}
+                                <small class="text-muted">${currentUser} · ${now}</small>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-danger" onclick="removePhoto(this)" style="display: ${currentRole === '교사' ? 'inline-block' : 'none'}">
+                                        <i class="fas fa-trash"></i> 삭제
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // 맨 앞에 추가
+                    galleryGrid.insertBefore(newPhoto, galleryGrid.firstChild);
+                    alert('사진이 업로드되었습니다! 📸');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('지원되지 않는 파일 형식입니다.');
+                return;
+            }
+
+            // 모달 닫기 및 폼 초기화
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addPhotoModal'));
+            modal.hide();
+            document.getElementById('photoTitle').value = '';
+            document.getElementById('photoFile').value = '';
+            document.getElementById('photoDescription').value = '';
+        }
+
+        function removePhoto(button) {
+            if (currentRole === '교사') {
+                if (confirm('이 사진을 삭제하시겠습니까?')) {
+                    const photoCard = button.closest('.col-md-4');
+                    photoCard.remove();
+                    alert('사진이 삭제되었습니다.');
+                }
+            } else {
+                alert('교사만 사진을 삭제할 수 있습니다.');
+            }
+        }
+
+        // 건의사항 관련 함수들
+        function showAddSuggestionModal() {
+            const modal = new bootstrap.Modal(document.getElementById('addSuggestionModal'));
+            modal.show();
+        }
+
+        function addSuggestion() {
+            const content = document.getElementById('suggestionContent').value.trim();
+
+            if (!content) {
+                alert('건의사항을 입력해주세요.');
+                return;
+            }
+
+            // 현재 시간
+            const now = new Date().toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // 익명 번호 생성 (데모용)
+            const suggestionsList = document.getElementById('suggestionsList');
+            const existingCount = suggestionsList.querySelectorAll('.card').length;
+            const anonymousNum = String(existingCount + 1).padStart(3, '0');
+
+            // 새 건의사항 생성
+            const newSuggestion = document.createElement('div');
+            newSuggestion.className = 'card mb-3';
+            newSuggestion.innerHTML = `
+                <div class="card-body">
+                    <h6><i class="fas fa-user-secret text-primary"></i> 익명 #${anonymousNum}</h6>
+                    <p>${content}</p>
+                    <small class="text-muted">${now}</small>
+                </div>
+            `;
+
+            // 맨 위에 추가
+            suggestionsList.insertBefore(newSuggestion, suggestionsList.firstChild);
+
+            // 모달 닫기 및 폼 초기화
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addSuggestionModal'));
+            modal.hide();
+            document.getElementById('suggestionContent').value = '';
+
+            alert('건의사항이 익명으로 제출되었습니다! 📝');
         }
     </script>
 </body>
