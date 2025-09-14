@@ -398,7 +398,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2><i class="fas fa-images"></i> 앨범</h2>
                     <div>
-                        <button class="btn btn-info me-2" id="uploadPhotoBtn" onclick="showUploadPhotoModal()">
+                        <button class="btn btn-info me-2" id="addPhotoBtn" onclick="showAddPhotoModal()" style="display: none;">
                             <i class="fas fa-camera"></i> 사진 업로드
                         </button>
                         <button class="btn btn-outline-primary" onclick="showDashboard()">
@@ -408,7 +408,7 @@
                 </div>
 
                 <div id="photosList">
-                    <div class="row g-3">
+                    <div class="row g-3" id="galleryGrid">
                         <div class="col-md-6 col-lg-4">
                             <div class="card">
                                 <img src="https://via.placeholder.com/300x200?text=우리반+소풍" class="card-img-top" style="height: 200px; object-fit: cover;">
@@ -654,47 +654,6 @@
             document.getElementById('suggestionsSection').classList.remove('hidden');
         }
 
-        // 로그인 함수
-        function demoLogin(username, name, role) {
-            currentUser = name;
-            currentRole = role;
-
-            document.getElementById('userName').textContent = name;
-            document.getElementById('userRole').textContent = role;
-            document.getElementById('userRole').className = role === '교사' ? 'badge bg-success ms-1' : 'badge bg-primary ms-1';
-            document.getElementById('welcomeMsg').textContent = name + '님, 환영합니다!';
-
-            // 역할별 텍스트 및 기능 변경
-            if (role === '교사') {
-                document.getElementById('assignmentText').textContent = '과제를 내주고 제출물을 확인하세요';
-                document.getElementById('suggestionText').textContent = '학생들의 건의사항을 확인하세요';
-                document.getElementById('suggestionContent').textContent = '학생들의 건의사항을 확인할 수 있습니다';
-                // 교사용 버튼들 표시
-                document.getElementById('addNoticeBtn').style.display = 'inline-block';
-                document.getElementById('addAssignmentBtn').style.display = 'inline-block';
-                document.getElementById('addPhotoBtn').style.display = 'inline-block';
-                document.getElementById('addSuggestionBtn').style.display = 'inline-block';
-            } else {
-                document.getElementById('assignmentText').textContent = '과제를 확인하고 제출하세요';
-                document.getElementById('suggestionText').textContent = '익명으로 건의사항을 남겨보세요';
-                document.getElementById('suggestionContent').textContent = '익명으로 건의사항을 남겨보세요';
-                // 학생용 버튼 설정
-                document.getElementById('addNoticeBtn').style.display = 'none';
-                document.getElementById('addAssignmentBtn').style.display = 'none';
-                document.getElementById('addPhotoBtn').style.display = 'inline-block'; // 학생도 사진 업로드 가능
-                document.getElementById('addSuggestionBtn').style.display = 'inline-block'; // 학생도 건의 가능
-            }
-
-            document.getElementById('userInfo').style.display = 'inline';
-            document.getElementById('logoutBtn').style.display = 'inline-block';
-
-            showDashboard();
-
-            // 환영 메시지
-            setTimeout(() => {
-                alert(`${name}님, 환영합니다! 🎓\n\n이것은 데모 버전입니다.\n실제 기능은 Python Flask 서버가 필요합니다.`);
-            }, 500);
-        }
 
         function logout() {
             currentUser = null;
@@ -803,6 +762,9 @@
 
             const logoutBtn = document.getElementById('logoutBtn');
             if (logoutBtn) logoutBtn.style.display = 'inline-block';
+
+            // 대시보드로 이동
+            showDashboard();
 
             // 글쓰기 버튼들 표시/숨김 설정
             console.log('Setting up write buttons for role:', role);
