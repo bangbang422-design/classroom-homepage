@@ -743,25 +743,35 @@
             }
         }
 
-        // Enter 키로 메시지 전송
-        document.getElementById('messageInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
+
+        // DOM이 로드된 후 이벤트 리스너 등록
+        document.addEventListener('DOMContentLoaded', function() {
+            // 로그인 폼 처리
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const username = document.getElementById('username').value;
+                    const password = document.getElementById('password').value;
+
+                    if (username === 'teacher' && password === 'teacher123') {
+                        demoLogin('teacher', '김선생님', '교사');
+                    } else if (username === 'student1' && password === 'student123') {
+                        demoLogin('student1', '김학생', '학생');
+                    } else {
+                        alert('잘못된 사용자명 또는 비밀번호입니다.\n\n데모 계정:\n- 교사: teacher / teacher123\n- 학생: student1 / student123');
+                    }
+                });
             }
-        });
 
-        // 로그인 폼 처리
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            if (username === 'teacher' && password === 'teacher123') {
-                demoLogin('teacher', '김선생님', '교사');
-            } else if (username === 'student1' && password === 'student123') {
-                demoLogin('student1', '김학생', '학생');
-            } else {
-                alert('잘못된 사용자명 또는 비밀번호입니다.\n\n데모 계정:\n- 교사: teacher / teacher123\n- 학생: student1 / student123');
+            // Enter 키로 메시지 전송
+            const messageInput = document.getElementById('messageInput');
+            if (messageInput) {
+                messageInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
             }
         });
 
