@@ -575,8 +575,16 @@
 
         <!-- 계정 생성 섹션 -->
         <div class="card mb-4">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h5><i class="fas fa-user-plus"></i> 새 학생 계정 생성</h5>
+                <div>
+                    <button class="btn btn-success btn-sm me-2" onclick="downloadTemplate()">
+                        <i class="fas fa-download"></i> 엑셀 템플릿 다운로드
+                    </button>
+                    <button class="btn btn-info btn-sm" onclick="showBulkUpload()">
+                        <i class="fas fa-upload"></i> 일괄 생성
+                    </button>
+                </div>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -611,6 +619,50 @@
                 <button type="button" class="btn btn-success" onclick="createStudentAccount()">
                     <i class="fas fa-user-plus"></i> 계정 생성
                 </button>
+            </div>
+
+            <!-- 일괄 생성 섹션 -->
+            <div id="bulkUploadSection" class="mt-4" style="display: none;">
+                <hr>
+                <h6><i class="fas fa-file-excel"></i> 엑셀 파일로 일괄 생성</h6>
+                <div class="alert alert-info">
+                    <strong><i class="fas fa-info-circle"></i> 사용 방법:</strong>
+                    <ol class="mb-0 mt-2">
+                        <li>"엑셀 템플릿 다운로드" 버튼을 클릭하여 템플릿을 다운받으세요</li>
+                        <li>템플릿에 학생 정보를 입력하세요 (이름, 아이디, 비밀번호)</li>
+                        <li>작성된 파일을 업로드하면 자동으로 계정이 생성됩니다</li>
+                    </ol>
+                </div>
+                <div class="mb-3">
+                    <label for="bulkFile" class="form-label">엑셀 파일 선택 (.xlsx, .csv)</label>
+                    <input type="file" class="form-control" id="bulkFile" accept=".xlsx,.xls,.csv" onchange="previewBulkFile()">
+                </div>
+                <div id="bulkPreview" class="mb-3" style="display: none;">
+                    <h6>미리보기:</h6>
+                    <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>순번</th>
+                                    <th>학생명</th>
+                                    <th>아이디</th>
+                                    <th>비밀번호</th>
+                                    <th>상태</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bulkPreviewBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-primary" onclick="processBulkUpload()" id="bulkCreateBtn" disabled>
+                        <i class="fas fa-users"></i> 일괄 생성 실행
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="hideBulkUpload()">
+                        <i class="fas fa-times"></i> 취소
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1765,6 +1817,236 @@
             } else {
                 alert('학생 계정을 찾을 수 없습니다.');
             }
+        }
+
+        // 일괄생성 관련 함수들
+        let bulkData = [];
+
+        function downloadTemplate() {
+            console.log('downloadTemplate called');
+
+            if (currentRole !== '교사') {
+                alert('교사만 템플릿을 다운로드할 수 있습니다.');
+                return;
+            }
+
+            // CSV 형태의 템플릿 데이터 생성
+            const csvContent = `학생명,아이디,비밀번호
+김철수,student01,password123
+이영희,student02,password456
+박민준,student03,password789
+최지은,student04,password012`;
+
+            // Blob으로 파일 생성
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', '학생계정_생성템플릿.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                alert('템플릿 파일이 다운로드되었습니다.\n\n파일을 열어 학생 정보를 입력한 후 업로드해주세요.');
+            }
+        }
+
+        function showBulkUpload() {
+            console.log('showBulkUpload called');
+
+            if (currentRole !== '교사') {
+                alert('교사만 일괄 생성을 사용할 수 있습니다.');
+                return;
+            }
+
+            const bulkSection = document.getElementById('bulkUploadSection');
+            if (bulkSection.style.display === 'none') {
+                bulkSection.style.display = 'block';
+            } else {
+                bulkSection.style.display = 'none';
+            }
+        }
+
+        function hideBulkUpload() {
+            document.getElementById('bulkUploadSection').style.display = 'none';
+            document.getElementById('bulkFile').value = '';
+            document.getElementById('bulkPreview').style.display = 'none';
+            document.getElementById('bulkCreateBtn').disabled = true;
+            bulkData = [];
+        }
+
+        function previewBulkFile() {
+            console.log('previewBulkFile called');
+
+            const fileInput = document.getElementById('bulkFile');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                document.getElementById('bulkPreview').style.display = 'none';
+                document.getElementById('bulkCreateBtn').disabled = true;
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let content = e.target.result;
+                    let rows;
+
+                    // CSV 파일 처리
+                    if (file.name.toLowerCase().endsWith('.csv')) {
+                        rows = content.split('\n').map(row => row.split(','));
+                    } else {
+                        alert('현재는 CSV 파일만 지원됩니다. (.csv 확장자 파일을 사용해주세요)');
+                        return;
+                    }
+
+                    // 헤더 행 제거 (첫 번째 행)
+                    const dataRows = rows.slice(1).filter(row => row.length >= 3 && row[0].trim());
+
+                    if (dataRows.length === 0) {
+                        alert('파일에 유효한 데이터가 없습니다.');
+                        return;
+                    }
+
+                    // 데이터 검증 및 처리
+                    bulkData = [];
+                    const previewBody = document.getElementById('bulkPreviewBody');
+                    previewBody.innerHTML = '';
+
+                    let hasErrors = false;
+
+                    dataRows.forEach((row, index) => {
+                        const name = row[0] ? row[0].trim() : '';
+                        const id = row[1] ? row[1].trim() : '';
+                        const password = row[2] ? row[2].trim() : '';
+
+                        let status = '✅ 정상';
+                        let statusClass = 'text-success';
+
+                        // 검증
+                        if (!name || name.length < 2 || name.length > 20) {
+                            status = '❌ 이름 오류';
+                            statusClass = 'text-danger';
+                            hasErrors = true;
+                        } else if (!id || !/^[a-zA-Z0-9]{3,20}$/.test(id)) {
+                            status = '❌ 아이디 형식 오류';
+                            statusClass = 'text-danger';
+                            hasErrors = true;
+                        } else if (!password || password.length < 4) {
+                            status = '❌ 비밀번호 오류';
+                            statusClass = 'text-danger';
+                            hasErrors = true;
+                        } else if (studentAccounts.find(s => s.id === id)) {
+                            status = '❌ 중복 아이디';
+                            statusClass = 'text-warning';
+                            hasErrors = true;
+                        } else if (bulkData.find(s => s.id === id)) {
+                            status = '❌ 파일내 중복';
+                            statusClass = 'text-warning';
+                            hasErrors = true;
+                        }
+
+                        bulkData.push({ name, id, password, status, valid: status === '✅ 정상' });
+
+                        // 미리보기 테이블에 추가
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${name}</td>
+                            <td>${id}</td>
+                            <td>••••••••</td>
+                            <td><span class="${statusClass}">${status}</span></td>
+                        `;
+                        previewBody.appendChild(tr);
+                    });
+
+                    document.getElementById('bulkPreview').style.display = 'block';
+                    document.getElementById('bulkCreateBtn').disabled = hasErrors;
+
+                    if (hasErrors) {
+                        alert(`파일에 오류가 있습니다. 미리보기를 확인하고 수정해주세요.\n\n유효한 데이터: ${bulkData.filter(d => d.valid).length}개\n오류 데이터: ${bulkData.filter(d => !d.valid).length}개`);
+                    }
+
+                } catch (error) {
+                    console.error('File parsing error:', error);
+                    alert('파일을 읽는 중 오류가 발생했습니다. 파일 형식을 확인해주세요.');
+                }
+            };
+
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        function processBulkUpload() {
+            console.log('processBulkUpload called');
+
+            if (currentRole !== '교사') {
+                alert('교사만 일괄 생성을 실행할 수 있습니다.');
+                return;
+            }
+
+            if (bulkData.length === 0) {
+                alert('업로드할 데이터가 없습니다.');
+                return;
+            }
+
+            const validData = bulkData.filter(d => d.valid);
+            if (validData.length === 0) {
+                alert('생성 가능한 유효한 계정이 없습니다.');
+                return;
+            }
+
+            const confirmed = confirm(`${validData.length}개의 학생 계정을 생성하시겠습니까?`);
+            if (!confirmed) return;
+
+            // 현재 날짜
+            const now = new Date().toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+
+            const tbody = document.getElementById('studentAccountsList');
+            let successCount = 0;
+
+            validData.forEach(student => {
+                // 계정 배열에 추가
+                const newStudent = {
+                    id: student.id,
+                    name: student.name,
+                    password: student.password,
+                    created: now,
+                    lastLogin: '로그인 기록 없음'
+                };
+                studentAccounts.push(newStudent);
+
+                // 테이블에 새 행 추가
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${student.name}</td>
+                    <td>${student.id}</td>
+                    <td>${now}</td>
+                    <td>로그인 기록 없음</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning me-1" onclick="resetPassword('${student.id}', '${student.name}')">
+                            <i class="fas fa-key"></i> 비밀번호 재설정
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteAccount('${student.id}', '${student.name}')">
+                            <i class="fas fa-trash"></i> 삭제
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(newRow);
+                successCount++;
+            });
+
+            // 일괄 생성 섹션 초기화
+            hideBulkUpload();
+
+            alert(`🎉 일괄 생성 완료!\n\n성공: ${successCount}개 계정이 생성되었습니다.`);
         }
     </script>
 </body>
