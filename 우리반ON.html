@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>우리반 ON - 온라인 교실</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: #667eea !important;
+            font-size: 1.5rem;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            margin: 20px;
+            min-height: calc(100vh - 120px);
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 500;
+        }
+
+        .login-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .chat-demo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+
+        .message-demo {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin: 5px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="#" onclick="showLogin()">
+                <i class="fas fa-school"></i> 우리반 ON
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text" id="userInfo" style="display: none;">
+                    <i class="fas fa-user"></i> <span id="userName"></span>님
+                    <span id="userRole" class="badge bg-primary ms-1"></span>
+                </span>
+                <button class="btn btn-outline-danger btn-sm ms-2" id="logoutBtn" style="display: none;" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="main-container p-4">
+            <!-- 로그인 화면 -->
+            <div id="loginSection">
+                <div class="text-center mb-5">
+                    <i class="fas fa-school fa-5x text-primary mb-3"></i>
+                    <h1>우리반 ON</h1>
+                    <p class="lead">학생과 교사가 실시간으로 연결되는 우리반만의 온라인 교실</p>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body p-4">
+                                <h3 class="text-center mb-4">로그인</h3>
+
+                                <form id="loginForm">
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">
+                                            <i class="fas fa-user"></i> 사용자명
+                                        </label>
+                                        <input type="text" class="form-control" id="username" required>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="password" class="form-label">
+                                            <i class="fas fa-lock"></i> 비밀번호
+                                        </label>
+                                        <input type="password" class="form-control" id="password" required>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-sign-in-alt"></i> 로그인
+                                    </button>
+                                </form>
+
+                                <div class="login-section mt-4">
+                                    <h6><i class="fas fa-info-circle"></i> 데모 계정 (클릭하여 로그인):</h6>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-success w-100" onclick="demoLogin('teacher', '김선생님', '교사')">
+                                                <strong>교사 로그인</strong><br>
+                                                <small>teacher / teacher123</small>
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-primary w-100" onclick="demoLogin('student1', '김학생', '학생')">
+                                                <strong>학생 로그인</strong><br>
+                                                <small>student1 / student123</small>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 대시보드 -->
+            <div id="dashboardSection" class="hidden">
+                <div class="text-center mb-5">
+                    <h1><i class="fas fa-home"></i> 우리반 ON 대시보드</h1>
+                    <p class="lead" id="welcomeMsg"></p>
+                </div>
+
+                <div class="row g-4">
+                    <!-- 실시간 채팅 -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="feature-card card" onclick="showChat()">
+                            <div class="card-body text-center p-4">
+                                <div class="feature-icon">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <h5 class="card-title">실시간 채팅</h5>
+                                <p class="card-text">반 친구들과 실시간으로 대화해요</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 공지사항 -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="feature-card card" onclick="showNotices()"
+                             style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                            <div class="card-body text-center p-4">
+                                <div class="feature-icon">
+                                    <i class="fas fa-bullhorn"></i>
+                                </div>
+                                <h5 class="card-title">공지사항</h5>
+                                <p class="card-text">중요한 공지사항을 확인하세요</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 과제 -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="feature-card card" onclick="showAssignments()"
+                             style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                            <div class="card-body text-center p-4">
+                                <div class="feature-icon">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                                <h5 class="card-title">과제</h5>
+                                <p class="card-text" id="assignmentText">과제를 확인하고 제출하세요</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 앨범 -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="feature-card card" onclick="showGallery()"
+                             style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);">
+                            <div class="card-body text-center p-4">
+                                <div class="feature-icon">
+                                    <i class="fas fa-images"></i>
+                                </div>
+                                <h5 class="card-title">앨범</h5>
+                                <p class="card-text">우리반의 소중한 추억을 공유해요</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 익명 건의함 -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="feature-card card" onclick="showSuggestions()"
+                             style="background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);">
+                            <div class="card-body text-center p-4">
+                                <div class="feature-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <h5 class="card-title">익명 건의함</h5>
+                                <p class="card-text" id="suggestionText">익명으로 건의사항을 남겨보세요</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 개인 메시지 -->
+                    <div class="col-md-6 col-lg-4">
+                        <div class="feature-card card"
+                             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); opacity: 0.7;">
+                            <div class="card-body text-center p-4">
+                                <div class="feature-icon">
+                                    <i class="fas fa-user-friends"></i>
+                                </div>
+                                <h5 class="card-title">1:1 대화</h5>
+                                <p class="card-text">개인 메시지 (준비 중)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 채팅 화면 -->
+            <div id="chatSection" class="hidden">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-comments"></i> 실시간 채팅</h2>
+                    <button class="btn btn-outline-primary" onclick="showDashboard()">
+                        <i class="fas fa-arrow-left"></i> 돌아가기
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5>우리반 채팅방</h5>
+                        <small>모든 대화는 저장되니 예의를 지켜주세요 😊</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="chat-demo" id="chatMessages">
+                            <div class="message-demo">
+                                <strong class="text-primary">김선생님:</strong> 안녕하세요! 오늘도 열심히 공부해봐요! 📚
+                                <small class="text-muted d-block">2024-01-15 09:00</small>
+                            </div>
+                            <div class="message-demo">
+                                <strong class="text-success">김학생:</strong> 네! 좋은 아침이에요 선생님! ☀️
+                                <small class="text-muted d-block">2024-01-15 09:01</small>
+                            </div>
+                            <div class="message-demo">
+                                <strong class="text-info">이학생:</strong> 오늘 과제 제출 마감일이 언제인가요?
+                                <small class="text-muted d-block">2024-01-15 09:02</small>
+                            </div>
+                        </div>
+
+                        <div class="input-group mt-3">
+                            <input type="text" id="messageInput" class="form-control"
+                                   placeholder="메시지를 입력하세요..." maxlength="500">
+                            <button class="btn btn-primary" type="button" onclick="sendMessage()">
+                                <i class="fas fa-paper-plane"></i> 전송
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 기타 섹션들... -->
+            <div id="noticesSection" class="hidden">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-bullhorn"></i> 공지사항</h2>
+                    <button class="btn btn-outline-primary" onclick="showDashboard()">
+                        <i class="fas fa-arrow-left"></i> 돌아가기
+                    </button>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5><i class="fas fa-pin text-danger"></i> 중간고사 안내</h5>
+                        <p>다음 주 월요일부터 중간고사가 시작됩니다. 시험 범위를 꼼꼼히 확인하세요.</p>
+                        <small class="text-muted">김선생님 · 2024-01-15 08:00</small>
+                    </div>
+                </div>
+            </div>
+
+            <div id="assignmentsSection" class="hidden">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-tasks"></i> 과제</h2>
+                    <button class="btn btn-outline-primary" onclick="showDashboard()">
+                        <i class="fas fa-arrow-left"></i> 돌아가기
+                    </button>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5><i class="fas fa-file-alt text-primary"></i> 수학 문제집 3단원</h5>
+                        <p>3단원 연습문제를 풀고 사진을 찍어서 제출하세요.</p>
+                        <small class="text-muted">마감일: 2024-01-20 23:59</small>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gallerySection" class="hidden">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-images"></i> 앨범</h2>
+                    <button class="btn btn-outline-primary" onclick="showDashboard()">
+                        <i class="fas fa-arrow-left"></i> 돌아가기
+                    </button>
+                </div>
+                <p class="text-center py-5 text-muted">
+                    <i class="fas fa-camera fa-5x mb-3"></i><br>
+                    아직 사진이 없습니다<br>
+                    첫 번째 사진을 업로드해보세요!
+                </p>
+            </div>
+
+            <div id="suggestionsSection" class="hidden">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-envelope"></i> 익명 건의함</h2>
+                    <button class="btn btn-outline-primary" onclick="showDashboard()">
+                        <i class="fas fa-arrow-left"></i> 돌아가기
+                    </button>
+                </div>
+                <p class="text-center py-5 text-muted">
+                    <i class="fas fa-inbox fa-5x mb-3"></i><br>
+                    <span id="suggestionContent">건의사항을 남겨보세요</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentUser = null;
+        let currentRole = null;
+
+        // 페이지 표시 함수들
+        function hideAllSections() {
+            document.querySelectorAll('#loginSection, #dashboardSection, #chatSection, #noticesSection, #assignmentsSection, #gallerySection, #suggestionsSection').forEach(section => {
+                section.classList.add('hidden');
+            });
+        }
+
+        function showLogin() {
+            hideAllSections();
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'none';
+        }
+
+        function showDashboard() {
+            hideAllSections();
+            document.getElementById('dashboardSection').classList.remove('hidden');
+        }
+
+        function showChat() {
+            hideAllSections();
+            document.getElementById('chatSection').classList.remove('hidden');
+        }
+
+        function showNotices() {
+            hideAllSections();
+            document.getElementById('noticesSection').classList.remove('hidden');
+        }
+
+        function showAssignments() {
+            hideAllSections();
+            document.getElementById('assignmentsSection').classList.remove('hidden');
+        }
+
+        function showGallery() {
+            hideAllSections();
+            document.getElementById('gallerySection').classList.remove('hidden');
+        }
+
+        function showSuggestions() {
+            hideAllSections();
+            document.getElementById('suggestionsSection').classList.remove('hidden');
+        }
+
+        // 로그인 함수
+        function demoLogin(username, name, role) {
+            currentUser = name;
+            currentRole = role;
+
+            document.getElementById('userName').textContent = name;
+            document.getElementById('userRole').textContent = role;
+            document.getElementById('userRole').className = role === '교사' ? 'badge bg-success ms-1' : 'badge bg-primary ms-1';
+            document.getElementById('welcomeMsg').textContent = name + '님, 환영합니다!';
+
+            // 역할별 텍스트 변경
+            if (role === '교사') {
+                document.getElementById('assignmentText').textContent = '과제를 내주고 제출물을 확인하세요';
+                document.getElementById('suggestionText').textContent = '학생들의 건의사항을 확인하세요';
+                document.getElementById('suggestionContent').textContent = '학생들의 건의사항을 확인할 수 있습니다';
+            } else {
+                document.getElementById('assignmentText').textContent = '과제를 확인하고 제출하세요';
+                document.getElementById('suggestionText').textContent = '익명으로 건의사항을 남겨보세요';
+                document.getElementById('suggestionContent').textContent = '익명으로 건의사항을 남겨보세요';
+            }
+
+            document.getElementById('userInfo').style.display = 'inline';
+            document.getElementById('logoutBtn').style.display = 'inline-block';
+
+            showDashboard();
+
+            // 환영 메시지
+            setTimeout(() => {
+                alert(`${name}님, 환영합니다! 🎓\n\n이것은 데모 버전입니다.\n실제 기능은 Python Flask 서버가 필요합니다.`);
+            }, 500);
+        }
+
+        function logout() {
+            currentUser = null;
+            currentRole = null;
+            showLogin();
+        }
+
+        // 채팅 메시지 전송
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+
+            if (message && currentUser) {
+                const chatMessages = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message-demo';
+
+                const now = new Date().toLocaleString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                messageDiv.innerHTML = `
+                    <strong class="${currentRole === '교사' ? 'text-primary' : 'text-success'}">${currentUser}:</strong> ${message}
+                    <small class="text-muted d-block">${now}</small>
+                `;
+
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                input.value = '';
+
+                // 자동 응답 (데모용)
+                setTimeout(() => {
+                    const autoReply = document.createElement('div');
+                    autoReply.className = 'message-demo';
+                    autoReply.innerHTML = `
+                        <strong class="text-info">System:</strong> 메시지가 전송되었습니다! (데모 모드)
+                        <small class="text-muted d-block">${now}</small>
+                    `;
+                    chatMessages.appendChild(autoReply);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1000);
+            }
+        }
+
+        // Enter 키로 메시지 전송
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // 로그인 폼 처리
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'teacher' && password === 'teacher123') {
+                demoLogin('teacher', '김선생님', '교사');
+            } else if (username === 'student1' && password === 'student123') {
+                demoLogin('student1', '김학생', '학생');
+            } else {
+                alert('잘못된 사용자명 또는 비밀번호입니다.\n\n데모 계정:\n- 교사: teacher / teacher123\n- 학생: student1 / student123');
+            }
+        });
+    </script>
+</body>
+</html>

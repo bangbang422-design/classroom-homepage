@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}대시보드 - 우리반 ON{% endblock %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1><i class="fas fa-home"></i> 우리반 ON 대시보드</h1>
+    <p class="lead">{{ session.name }}님, 환영합니다!</p>
+</div>
+
+<div class="row g-4">
+    <!-- 실시간 채팅 -->
+    <div class="col-md-6 col-lg-4">
+        <a href="{{ url_for('chat') }}" class="feature-card card">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h5 class="card-title">실시간 채팅</h5>
+                <p class="card-text">반 친구들과 실시간으로 대화해요</p>
+            </div>
+        </a>
+    </div>
+
+    <!-- 공지사항 -->
+    <div class="col-md-6 col-lg-4">
+        <a href="{{ url_for('notices') }}" class="feature-card card"
+           style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+                <h5 class="card-title">공지사항</h5>
+                <p class="card-text">중요한 공지사항을 확인하세요</p>
+            </div>
+        </a>
+    </div>
+
+    <!-- 과제 -->
+    <div class="col-md-6 col-lg-4">
+        <a href="{{ url_for('assignments') }}" class="feature-card card"
+           style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h5 class="card-title">과제</h5>
+                <p class="card-text">
+                    {% if session.role == 'teacher' %}
+                        과제를 내주고 제출물을 확인하세요
+                    {% else %}
+                        과제를 확인하고 제출하세요
+                    {% endif %}
+                </p>
+            </div>
+        </a>
+    </div>
+
+    <!-- 앨범 -->
+    <div class="col-md-6 col-lg-4">
+        <a href="{{ url_for('gallery') }}" class="feature-card card"
+           style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon">
+                    <i class="fas fa-images"></i>
+                </div>
+                <h5 class="card-title">앨범</h5>
+                <p class="card-text">우리반의 소중한 추억을 공유해요</p>
+            </div>
+        </a>
+    </div>
+
+    <!-- 익명 건의함 -->
+    <div class="col-md-6 col-lg-4">
+        <a href="{{ url_for('suggestions') }}" class="feature-card card"
+           style="background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h5 class="card-title">익명 건의함</h5>
+                <p class="card-text">
+                    {% if session.role == 'teacher' %}
+                        학생들의 건의사항을 확인하세요
+                    {% else %}
+                        익명으로 건의사항을 남겨보세요
+                    {% endif %}
+                </p>
+            </div>
+        </a>
+    </div>
+
+    <!-- 개인 메시지 (향후 구현) -->
+    <div class="col-md-6 col-lg-4">
+        <div class="feature-card card"
+             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); opacity: 0.7;">
+            <div class="card-body text-center p-4">
+                <div class="feature-icon">
+                    <i class="fas fa-user-friends"></i>
+                </div>
+                <h5 class="card-title">1:1 대화</h5>
+                <p class="card-text">개인 메시지 (준비 중)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if session.role == 'teacher' %}
+<div class="mt-5">
+    <div class="card">
+        <div class="card-body">
+            <h5><i class="fas fa-crown"></i> 교사 전용 기능</h5>
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                        <h6>학급 관리</h6>
+                        <p class="small text-muted">학생 현황과 활동 관리</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <i class="fas fa-chart-bar fa-2x text-success mb-2"></i>
+                        <h6>통계 분석</h6>
+                        <p class="small text-muted">과제 제출률과 참여도 분석</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <i class="fas fa-cog fa-2x text-warning mb-2"></i>
+                        <h6>시스템 설정</h6>
+                        <p class="small text-muted">반 설정과 권한 관리</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="mt-5">
+    <div class="card">
+        <div class="card-body">
+            <h5><i class="fas fa-graduation-cap"></i> 학습 현황</h5>
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <i class="fas fa-clipboard-check fa-2x text-primary mb-2"></i>
+                        <h6>과제 현황</h6>
+                        <p class="small text-muted">제출한 과제와 남은 과제</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <i class="fas fa-calendar-alt fa-2x text-success mb-2"></i>
+                        <h6>출석 현황</h6>
+                        <p class="small text-muted">출석률과 참여도</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <i class="fas fa-medal fa-2x text-warning mb-2"></i>
+                        <h6>성과</h6>
+                        <p class="small text-muted">받은 피드백과 칭찬</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

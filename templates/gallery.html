@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}앨범 - 우리반 ON{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-images"></i> 우리반 앨범</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+        <i class="fas fa-camera"></i> 사진 업로드
+    </button>
+</div>
+
+{% if session.role == 'teacher' %}
+<div class="alert alert-info mb-4">
+    <i class="fas fa-info-circle"></i> 교사님은 모든 사진을 확인할 수 있으며, 승인되지 않은 사진은 학생들에게 표시되지 않습니다.
+</div>
+{% endif %}
+
+{% if photos %}
+    <div class="row g-3">
+        {% for photo in photos %}
+        <div class="col-md-6 col-lg-4 col-xl-3">
+            <div class="card">
+                <img src="{{ url_for('uploaded_file', filename=photo[1]) }}" 
+                     class="card-img-top" style="height: 200px; object-fit: cover;" 
+                     alt="{{ photo[2] }}">
+                <div class="card-body p-2">
+                    <h6 class="card-title text-truncate">{{ photo[2] }}</h6>
+                    <small class="text-muted">
+                        <i class="fas fa-user"></i> {{ photo[3] }}<br>
+                        <i class="fas fa-clock"></i> {{ photo[5][:16] }}
+                    </small>
+                    {% if session.role == 'teacher' %}
+                        <div class="mt-2">
+                            {% if photo[4] %}
+                                <span class="badge bg-success">승인됨</span>
+                            {% else %}
+                                <a href="{{ url_for('approve_photo', photo_id=photo[0]) }}" 
+                                   class="btn btn-sm btn-warning">
+                                    <i class="fas fa-check"></i> 승인
+                                </a>
+                                <span class="badge bg-secondary ms-1">대기중</span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-camera fa-5x text-muted mb-3"></i>
+        <h4 class="text-muted">아직 사진이 없습니다</h4>
+        <p class="text-muted">첫 번째 사진을 업로드해보세요!</p>
+    </div>
+{% endif %}
+
+<!-- 사진 업로드 모달 -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-camera"></i> 사진 업로드</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('upload_photo') }}" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">사진 선택 *</label>
+                        <input type="file" class="form-control" id="file" name="file" 
+                               accept=".jpg,.jpeg,.png,.gif" required>
+                        <div class="form-text">
+                            JPG, PNG, GIF 파일만 업로드 가능합니다.
+                        </div>
+                    </div>
+                    {% if session.role == 'student' %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> 업로드된 사진은 교사 승인 후 게시됩니다.
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload"></i> 업로드
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

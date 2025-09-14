@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}실시간 채팅 - 우리반 ON{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-comments"></i> 우리반 실시간 채팅</h5>
+                <small>모든 대화는 저장되니 예의를 지켜주세요 😊</small>
+            </div>
+            <div class="card-body">
+                <div id="messages" style="height: 400px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 10px; padding: 15px; background: #f8f9fa;">
+                    {% for message in messages %}
+                    <div class="message-item mb-2">
+                        <strong class="text-primary">{{ message[0] }}:</strong>
+                        <span>{{ message[1] }}</span>
+                        <small class="text-muted d-block">{{ message[2] }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="input-group mt-3">
+                    <input type="text" id="messageInput" class="form-control" placeholder="메시지를 입력하세요..." maxlength="500">
+                    <button class="btn btn-primary" type="button" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i> 전송
+                    </button>
+                </div>
+                
+                <div class="mt-2">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> 
+                        현재 접속자: <span id="userCount">1</span>명
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const socket = io();
+    const messages = document.getElementById('messages');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    
+    // 방 참여
+    socket.emit('join', {});
+    
+    // 메시지 전송
+    function sendMessage() {
+        const message = messageInput.value.trim();
+        if (message) {
+            socket.emit('message', {message: message});
+            messageInput.value = '';
+        }
+    }
+    
+    sendBtn.addEventListener('click', sendMessage);
+    
+    messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+    
+    // 메시지 수신
+    socket.on('message', function(data) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message-item mb-2';
+        
+        if (data.username === 'System') {
+            messageDiv.innerHTML = `
+                <span class="text-info"><i class="fas fa-info-circle"></i> ${data.message}</span>
+            `;
+        } else {
+            messageDiv.innerHTML = `
+                <strong class="text-primary">${data.username}:</strong>
+                <span>${data.message}</span>
+                <small class="text-muted d-block">${data.timestamp || 'just now'}</small>
+            `;
+        }
+        
+        messages.appendChild(messageDiv);
+        messages.scrollTop = messages.scrollHeight;
+        
+        // 메시지가 너무 많아지면 오래된 것 삭제
+        if (messages.children.length > 100) {
+            messages.removeChild(messages.firstChild);
+        }
+    });
+    
+    // 페이지 로드시 스크롤 맨 아래로
+    window.addEventListener('load', function() {
+        messages.scrollTop = messages.scrollHeight;
+    });
+    
+    // 페이지 떠날 때 방 나가기
+    window.addEventListener('beforeunload', function() {
+        socket.emit('leave', {});
+    });
+</script>
+{% endblock %}

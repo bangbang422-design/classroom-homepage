@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}과제 - 우리반 ON{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tasks"></i> 과제</h2>
+    {% if session.role == 'teacher' %}
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAssignmentModal">
+        <i class="fas fa-plus"></i> 과제 내주기
+    </button>
+    {% endif %}
+</div>
+
+{% if assignments %}
+    {% for assignment in assignments %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <h5 class="card-title">
+                        <i class="fas fa-file-alt text-primary"></i> {{ assignment[1] }}
+                        {% if session.role == 'student' %}
+                            {% if assignment[5] %}
+                                <span class="badge bg-success">제출완료</span>
+                            {% else %}
+                                <span class="badge bg-warning">미제출</span>
+                            {% endif %}
+                        {% endif %}
+                    </h5>
+                    <p class="card-text">{{ assignment[2] }}</p>
+                    <small class="text-muted">
+                        <i class="fas fa-calendar-alt"></i> 마감일: {{ assignment[3] }}
+                        <span class="ms-3"><i class="fas fa-clock"></i> 등록일: {{ assignment[4][:16] }}</span>
+                    </small>
+                </div>
+                <div class="col-md-4 text-end">
+                    {% if session.role == 'teacher' %}
+                        <div class="mb-2">
+                            <i class="fas fa-users"></i> 제출: {{ assignment[5] }}명
+                        </div>
+                        <a href="#" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#submissionModal{{ assignment[0] }}">
+                            <i class="fas fa-eye"></i> 제출목록 보기
+                        </a>
+                    {% else %}
+                        {% if assignment[5] %}
+                            <div class="alert alert-success mb-2">
+                                <i class="fas fa-check"></i> 제출완료<br>
+                                <small>파일: {{ assignment[5] }}</small>
+                            </div>
+                        {% endif %}
+                        <form method="POST" action="{{ url_for('submit_assignment', assignment_id=assignment[0]) }}" 
+                              enctype="multipart/form-data" class="d-inline">
+                            <div class="input-group input-group-sm mb-2">
+                                <input type="file" class="form-control" name="file" required>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-upload"></i> 제출
+                                </button>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-clipboard-list fa-5x text-muted mb-3"></i>
+        <h4 class="text-muted">과제가 없습니다</h4>
+        <p class="text-muted">처음 과제를 내주어 보세요!</p>
+    </div>
+{% endif %}
+
+<!-- 과제 등록 모달 (교사만) -->
+{% if session.role == 'teacher' %}
+<div class="modal fade" id="addAssignmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-tasks"></i> 과제 내주기</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('add_assignment') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">과제 제목 *</label>
+                        <input type="text" class="form-control" id="title" name="title" required maxlength="100">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">과제 설명 *</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required maxlength="1000" placeholder="과제에 대한 자세한 설명을 작성해주세요..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="due_date" class="form-label">마감일시 *</label>
+                        <input type="datetime-local" class="form-control" id="due_date" name="due_date" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> 과제 등록
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

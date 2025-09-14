@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}공지사항 - 우리반 ON{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-bullhorn"></i> 공지사항</h2>
+    {% if session.role == 'teacher' %}
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addNoticeModal">
+        <i class="fas fa-plus"></i> 공지 작성
+    </button>
+    {% endif %}
+</div>
+
+{% if notices %}
+    {% for notice in notices %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <h5 class="card-title">
+                        <i class="fas fa-pin text-danger"></i> {{ notice[1] }}
+                    </h5>
+                    <p class="card-text">{{ notice[2] }}</p>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted">
+                        <i class="fas fa-user"></i> {{ notice[3] }}<br>
+                        <i class="fas fa-clock"></i> {{ notice[4][:16] }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-inbox fa-5x text-muted mb-3"></i>
+        <h4 class="text-muted">공지사항이 없습니다</h4>
+        <p class="text-muted">처음 공지사항을 작성해보세요!</p>
+    </div>
+{% endif %}
+
+<!-- 공지 작성 모달 (교사만) -->
+{% if session.role == 'teacher' %}
+<div class="modal fade" id="addNoticeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-edit"></i> 공지사항 작성</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('add_notice') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">제목 *</label>
+                        <input type="text" class="form-control" id="title" name="title" required maxlength="100">
+                    </div>
+                    <div class="mb-3">
+                        <label for="content" class="form-label">내용 *</label>
+                        <textarea class="form-control" id="content" name="content" rows="5" required maxlength="1000" placeholder="중요한 공지사항을 작성해주세요..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> 공지 등록
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
