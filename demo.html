@@ -160,13 +160,13 @@
                                     <h6><i class="fas fa-info-circle"></i> 데모 계정 (클릭하여 로그인):</h6>
                                     <div class="row">
                                         <div class="col-6">
-                                            <button class="btn btn-outline-success w-100" onclick="demoLogin('teacher', '김선생님', '교사')">
+                                            <button class="btn btn-outline-success w-100" onclick="quickTeacherLogin()">
                                                 <strong>교사 로그인</strong><br>
                                                 <small>teacher / teacher123</small>
                                             </button>
                                         </div>
                                         <div class="col-6">
-                                            <button class="btn btn-outline-primary w-100" onclick="demoLogin('student1', '김학생', '학생')">
+                                            <button class="btn btn-outline-primary w-100" onclick="quickStudentLogin()">
                                                 <strong>학생 로그인</strong><br>
                                                 <small>student1 / student123</small>
                                             </button>
@@ -744,25 +744,76 @@
         }
 
 
-        // 로그인 처리 함수 (인라인으로 직접 호출)
+        // 간단하고 확실한 로그인 처리
         function handleLogin(event) {
             event.preventDefault();
-            event.stopPropagation();
+            console.log('handleLogin called');
 
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            console.log('Login attempt:', username, password); // 디버그용
+            console.log('Trying login:', username, password);
 
             if (username === 'teacher' && password === 'teacher123') {
-                demoLogin('teacher', '김선생님', '교사');
+                console.log('Teacher login success');
+                simpleLogin('교사', '김선생님');
             } else if (username === 'student1' && password === 'student123') {
-                demoLogin('student1', '김학생', '학생');
+                console.log('Student login success');
+                simpleLogin('학생', '김학생');
             } else {
-                alert('잘못된 사용자명 또는 비밀번호입니다.\n\n데모 계정:\n- 교사: teacher / teacher123\n- 학생: student1 / student123');
+                alert('잘못된 로그인입니다.\n\n교사: teacher / teacher123\n학생: student1 / student123');
             }
 
             return false;
+        }
+
+        // 간단한 로그인 함수 (에러 없이 확실히 작동)
+        function simpleLogin(role, name) {
+            console.log('simpleLogin called:', role, name);
+
+            currentUser = name;
+            currentRole = role;
+
+            // 로그인 성공 알림
+            alert(`${name}님 (${role}) 로그인 성공! 🎉`);
+
+            // 로그인 섹션 숨기기
+            const loginSection = document.getElementById('loginSection');
+            if (loginSection) loginSection.style.display = 'none';
+
+            // 대시보드 표시
+            const dashboardSection = document.getElementById('dashboardSection');
+            if (dashboardSection) {
+                dashboardSection.style.display = 'block';
+                dashboardSection.classList.remove('hidden');
+            }
+
+            // 사용자 정보 표시
+            const userInfo = document.getElementById('userInfo');
+            if (userInfo) userInfo.style.display = 'inline';
+
+            const userName = document.getElementById('userName');
+            if (userName) userName.textContent = name;
+
+            const userRole = document.getElementById('userRole');
+            if (userRole) {
+                userRole.textContent = role;
+                userRole.className = role === '교사' ? 'badge bg-success ms-1' : 'badge bg-primary ms-1';
+            }
+
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) logoutBtn.style.display = 'inline-block';
+        }
+
+        // 빠른 로그인 함수들 (인라인 버튼용)
+        function quickTeacherLogin() {
+            console.log('Quick teacher login');
+            simpleLogin('교사', '김선생님');
+        }
+
+        function quickStudentLogin() {
+            console.log('Quick student login');
+            simpleLogin('학생', '김학생');
         }
 
         // DOM이 로드된 후 메시지 입력 이벤트만 등록
