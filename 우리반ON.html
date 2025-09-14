@@ -317,15 +317,31 @@
             <div id="noticesSection" class="hidden">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2><i class="fas fa-bullhorn"></i> 공지사항</h2>
-                    <button class="btn btn-outline-primary" onclick="showDashboard()">
-                        <i class="fas fa-arrow-left"></i> 돌아가기
-                    </button>
+                    <div>
+                        <button class="btn btn-success me-2" id="addNoticeBtn" onclick="showAddNoticeModal()" style="display: none;">
+                            <i class="fas fa-plus"></i> 공지 작성
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="showDashboard()">
+                            <i class="fas fa-arrow-left"></i> 돌아가기
+                        </button>
+                    </div>
                 </div>
-                <div class="card">
-                    <div class="card-body">
-                        <h5><i class="fas fa-pin text-danger"></i> 중간고사 안내</h5>
-                        <p>다음 주 월요일부터 중간고사가 시작됩니다. 시험 범위를 꼼꼼히 확인하세요.</p>
-                        <small class="text-muted">김선생님 · 2024-01-15 08:00</small>
+
+                <div id="noticesList">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5><i class="fas fa-pin text-danger"></i> 중간고사 안내</h5>
+                            <p>다음 주 월요일부터 중간고사가 시작됩니다. 시험 범위를 꼼꼼히 확인하세요.</p>
+                            <small class="text-muted">김선생님 · 2024-01-15 08:00</small>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5><i class="fas fa-pin text-danger"></i> 온라인 수업 안내</h5>
+                            <p>금요일 수업은 온라인으로 진행됩니다. Zoom 링크를 확인해주세요.</p>
+                            <small class="text-muted">김선생님 · 2024-01-14 16:30</small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -371,6 +387,34 @@
                     <i class="fas fa-inbox fa-5x mb-3"></i><br>
                     <span id="suggestionContent">건의사항을 남겨보세요</span>
                 </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 공지 작성 모달 -->
+    <div class="modal fade" id="addNoticeModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-edit"></i> 공지사항 작성</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="noticeTitle" class="form-label">제목 *</label>
+                        <input type="text" class="form-control" id="noticeTitle" required maxlength="100" placeholder="공지사항 제목을 입력하세요">
+                    </div>
+                    <div class="mb-3">
+                        <label for="noticeContent" class="form-label">내용 *</label>
+                        <textarea class="form-control" id="noticeContent" rows="5" required maxlength="1000" placeholder="중요한 공지사항을 작성해주세요..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary" onclick="addNotice()">
+                        <i class="fas fa-save"></i> 공지 등록
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -434,15 +478,19 @@
             document.getElementById('userRole').className = role === '교사' ? 'badge bg-success ms-1' : 'badge bg-primary ms-1';
             document.getElementById('welcomeMsg').textContent = name + '님, 환영합니다!';
 
-            // 역할별 텍스트 변경
+            // 역할별 텍스트 및 기능 변경
             if (role === '교사') {
                 document.getElementById('assignmentText').textContent = '과제를 내주고 제출물을 확인하세요';
                 document.getElementById('suggestionText').textContent = '학생들의 건의사항을 확인하세요';
                 document.getElementById('suggestionContent').textContent = '학생들의 건의사항을 확인할 수 있습니다';
+                // 교사용 버튼들 표시
+                document.getElementById('addNoticeBtn').style.display = 'inline-block';
             } else {
                 document.getElementById('assignmentText').textContent = '과제를 확인하고 제출하세요';
                 document.getElementById('suggestionText').textContent = '익명으로 건의사항을 남겨보세요';
                 document.getElementById('suggestionContent').textContent = '익명으로 건의사항을 남겨보세요';
+                // 학생은 버튼 숨김
+                document.getElementById('addNoticeBtn').style.display = 'none';
             }
 
             document.getElementById('userInfo').style.display = 'inline';
@@ -524,6 +572,78 @@
                 alert('잘못된 사용자명 또는 비밀번호입니다.\n\n데모 계정:\n- 교사: teacher / teacher123\n- 학생: student1 / student123');
             }
         });
+
+        // 공지사항 작성 관련 함수들
+        function showAddNoticeModal() {
+            if (currentRole === '교사') {
+                const modal = new bootstrap.Modal(document.getElementById('addNoticeModal'));
+                modal.show();
+            } else {
+                alert('교사만 공지사항을 작성할 수 있습니다.');
+            }
+        }
+
+        function addNotice() {
+            const title = document.getElementById('noticeTitle').value.trim();
+            const content = document.getElementById('noticeContent').value.trim();
+
+            if (!title || !content) {
+                alert('제목과 내용을 모두 입력해주세요.');
+                return;
+            }
+
+            if (currentRole !== '교사') {
+                alert('교사만 공지사항을 작성할 수 있습니다.');
+                return;
+            }
+
+            // 현재 시간
+            const now = new Date().toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // 새 공지사항 생성
+            const noticesList = document.getElementById('noticesList');
+            const newNotice = document.createElement('div');
+            newNotice.className = 'card mb-3';
+            newNotice.innerHTML = `
+                <div class="card-body">
+                    <h5><i class="fas fa-pin text-danger"></i> ${title}</h5>
+                    <p>${content}</p>
+                    <small class="text-muted">${currentUser} · ${now}</small>
+                    <button class="btn btn-sm btn-outline-danger ms-2" onclick="removeNotice(this)">
+                        <i class="fas fa-trash"></i> 삭제
+                    </button>
+                </div>
+            `;
+
+            // 맨 위에 추가
+            noticesList.insertBefore(newNotice, noticesList.firstChild);
+
+            // 모달 닫기 및 폼 초기화
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addNoticeModal'));
+            modal.hide();
+            document.getElementById('noticeTitle').value = '';
+            document.getElementById('noticeContent').value = '';
+
+            alert('공지사항이 등록되었습니다! 🎉');
+        }
+
+        function removeNotice(button) {
+            if (currentRole === '교사') {
+                if (confirm('이 공지사항을 삭제하시겠습니까?')) {
+                    const noticeCard = button.closest('.card');
+                    noticeCard.remove();
+                    alert('공지사항이 삭제되었습니다.');
+                }
+            } else {
+                alert('교사만 공지사항을 삭제할 수 있습니다.');
+            }
+        }
     </script>
 </body>
 </html>
