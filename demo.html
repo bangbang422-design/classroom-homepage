@@ -136,7 +136,7 @@
                             <div class="card-body p-4">
                                 <h3 class="text-center mb-4">로그인</h3>
 
-                                <form id="loginForm">
+                                <form id="loginForm" onsubmit="return handleLogin(event)">
                                     <div class="mb-3">
                                         <label for="username" class="form-label">
                                             <i class="fas fa-user"></i> 사용자명
@@ -148,7 +148,7 @@
                                         <label for="password" class="form-label">
                                             <i class="fas fa-lock"></i> 비밀번호
                                         </label>
-                                        <input type="password" class="form-control" id="password" required>
+                                        <input type="password" class="form-control" id="password" required onkeypress="if(event.key==='Enter') handleLogin(event)">
                                     </div>
 
                                     <button type="submit" class="btn btn-primary w-100">
@@ -744,26 +744,29 @@
         }
 
 
-        // DOM이 로드된 후 이벤트 리스너 등록
-        document.addEventListener('DOMContentLoaded', function() {
-            // 로그인 폼 처리
-            const loginForm = document.getElementById('loginForm');
-            if (loginForm) {
-                loginForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const username = document.getElementById('username').value;
-                    const password = document.getElementById('password').value;
+        // 로그인 처리 함수 (인라인으로 직접 호출)
+        function handleLogin(event) {
+            event.preventDefault();
+            event.stopPropagation();
 
-                    if (username === 'teacher' && password === 'teacher123') {
-                        demoLogin('teacher', '김선생님', '교사');
-                    } else if (username === 'student1' && password === 'student123') {
-                        demoLogin('student1', '김학생', '학생');
-                    } else {
-                        alert('잘못된 사용자명 또는 비밀번호입니다.\n\n데모 계정:\n- 교사: teacher / teacher123\n- 학생: student1 / student123');
-                    }
-                });
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            console.log('Login attempt:', username, password); // 디버그용
+
+            if (username === 'teacher' && password === 'teacher123') {
+                demoLogin('teacher', '김선생님', '교사');
+            } else if (username === 'student1' && password === 'student123') {
+                demoLogin('student1', '김학생', '학생');
+            } else {
+                alert('잘못된 사용자명 또는 비밀번호입니다.\n\n데모 계정:\n- 교사: teacher / teacher123\n- 학생: student1 / student123');
             }
 
+            return false;
+        }
+
+        // DOM이 로드된 후 메시지 입력 이벤트만 등록
+        document.addEventListener('DOMContentLoaded', function() {
             // Enter 키로 메시지 전송
             const messageInput = document.getElementById('messageInput');
             if (messageInput) {
